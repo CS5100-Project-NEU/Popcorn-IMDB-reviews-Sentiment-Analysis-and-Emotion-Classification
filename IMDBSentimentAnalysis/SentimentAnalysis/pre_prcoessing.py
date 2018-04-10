@@ -6,13 +6,16 @@ import pandas
 from os import listdir
 from os.path import isfile, join
 
-data_path = 'training/neg/'
-out_path = 'output/'
+
+data_path = 'C:/Users/Srivardhan/Desktop/NeU/FAI/project/code/aclImdb/train/neg/'
+# data_path = 'C:/Users/Srivardhan/Desktop/NeU/FAI/project/code/test/data_pre/'
+out_path = 'C:/Users/Srivardhan/Desktop/NeU/FAI/project/code/'
 
 files_list = [f for f in listdir(data_path) if isfile(join(data_path, f))]
 
 
 def file_data_list():
+
     files_data = []
     for i in range(0, len(files_list)):
         file_open = open(data_path + files_list[i], 'r')
@@ -23,6 +26,7 @@ def file_data_list():
 
 
 def stemming(data_cluster):
+
     stem_remover = PorterStemmer()
 
     for i in range(0, len(data_cluster)):
@@ -37,6 +41,7 @@ def stemming(data_cluster):
 
 
 def stopping_words(data_cluster):
+
     stop_words = set(stopwords.words('english'))
     punc_list = ['.', ',', '`', '`', '\'', '(', ')', '*', '&', '~', '<br />', '?']
     for p in punc_list:
@@ -59,6 +64,7 @@ def stopping_words(data_cluster):
 
 
 def create_csv(data):
+
     row_nums = []
     polarity = []
 

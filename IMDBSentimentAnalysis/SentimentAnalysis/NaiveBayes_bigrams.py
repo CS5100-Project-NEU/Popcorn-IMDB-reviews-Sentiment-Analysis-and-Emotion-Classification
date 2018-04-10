@@ -1,6 +1,7 @@
 import copy
 import random
 import csv
+import nltk
 from collections import Counter
 
 
@@ -29,7 +30,7 @@ def concatenate_reviews(reviews):
 
 
 def count_text(text, size):
-    words = text.split()
+    words = list(nltk.bigrams(text.split()))
     word_dict = dict(Counter(words))
     for key in word_dict.keys():
         word_dict[key] = word_dict[key] / float(size)
@@ -51,8 +52,8 @@ def get_review_list(reviews):
 
 def make_prediction(text, word_freq, class_prob):
     prediction = class_prob
-    # text_counts = count_text(text, 1)
-    text_counts = text.split()
+    # text_counts = text.split()
+    text_counts = list(nltk.bigrams(text.split()))
     for word in text_counts:
         if word in word_freq.keys():
             relative_word_occurrence = word_freq[word]
