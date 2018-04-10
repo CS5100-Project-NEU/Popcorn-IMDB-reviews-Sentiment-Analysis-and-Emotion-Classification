@@ -83,11 +83,12 @@ def main(n, k):
 
     all_data = pos_data + neg_data
 
-    acc = 0
+    correct_classification_count = 0;
+    incorrect_classification_count = 0;
     for i in range(n):
-        all_data = k_fold_data(all_data, k)
+        data = k_fold_data(all_data, k)
 
-        pos_data, neg_data = split_data_by_classes(all_data[0])
+        pos_data, neg_data = split_data_by_classes(data[0])
 
         pos_total = len(pos_data)
         neg_total = len(neg_data)
@@ -100,14 +101,27 @@ def main(n, k):
         neg_counts = word_count(neg_data)
         pos_counts = word_count(pos_data)
 
-        test_data = all_data[1]
+        test_data = data[1]
 
-        neg = make_prediction(test_data[0][1], neg_counts, neg_prob)
-        pos = make_prediction(test_data[0][1], pos_counts, pos_prob)
+        j = random.randrange(len(test_data))
 
-        acc = max(neg, pos)
+        test_review = test_data[j][1]
+        test_class = test_data[j][2]
 
-    print "Average accuracy for k-fold cross validation split over n iterations is " + str(float(acc) / n) + "%"
+        neg = make_prediction(test_review, neg_counts, neg_prob)
+        pos = make_prediction(test_review, pos_counts, pos_prob)
+
+        if pos > neg:
+            output_class = '1'
+        else:
+            output_class = '0'
+
+        if output_class == test_class:
+            correct_classification_count += 1
+        else:
+            incorrect_classification_count += 1
+
+    print "Average accuracy for k-fold cross validation split over n iterations is " + str(float(correct_classification_count) / n) + "%"
 
     # accuracy = looc(all_data)
     # print "accuracy for multiclass classification with LOOCV is " + str(accuracy * 100) + "%"
