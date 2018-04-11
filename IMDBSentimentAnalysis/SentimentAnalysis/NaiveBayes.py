@@ -2,7 +2,8 @@ import copy
 import random
 import csv
 from collections import Counter
-
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn import svm
 
 # splitting the dataSet into 90:10 ratio for 10-fold cross validation
 def k_fold_data(all_data, K):
@@ -25,7 +26,10 @@ def create_classification_classes(pos_data, neg_data):
 
 
 def concatenate_reviews(reviews):
-    return " ".join([r.lower() for r in reviews])
+    try:
+        return " ".join([r.lower() for r in reviews])
+    except:
+        return ""
 
 
 def count_text(text, size):
@@ -78,17 +82,33 @@ def split_data_by_classes(reviews):
 
 
 def main(n, k):
-    pos_data = list(csv.reader(open('training/pos/corpus_pos.csv', "r")))
-    neg_data = list(csv.reader(open('training/neg/corpus_neg.csv', "r")))
+    pos_data = list(csv.reader(open('training/pos/corpus_pos_1.csv', "r")))
+    neg_data = list(csv.reader(open('training/neg/corpus_neg_1.csv', "r")))
 
     all_data = pos_data + neg_data
+    Y = list()
+    X = list()
+    # Y.append('0')
+    # Y.append('1')
 
     correct_classification_count = 0;
     incorrect_classification_count = 0;
     for i in range(n):
+        print(i)
         data = k_fold_data(all_data, k)
 
         pos_data, neg_data = split_data_by_classes(data[0])
+
+        p_size = len(pos_data)
+        n_size = len(neg_data)
+
+        for x in range(p_size):
+            Y.append("1")
+            X.append(pos_data[x])
+
+        for x in range(n_size):
+            Y.append("0")
+            X.append(neg_data[x])
 
         pos_total = len(pos_data)
         neg_total = len(neg_data)
@@ -116,15 +136,28 @@ def main(n, k):
         else:
             output_class = '0'
 
+        print "Output class of NB is " + output_class
+
+        eval_class = evaluation(X, Y, test_review)
+
         if output_class == test_class:
             correct_classification_count += 1
         else:
             incorrect_classification_count += 1
 
-    print "Average accuracy for k-fold cross validation split over n iterations is " + str(float(correct_classification_count) / n) + "%"
-
-    # accuracy = looc(all_data)
-    # print "accuracy for multiclass classification with LOOCV is " + str(accuracy * 100) + "%"
+    percentage = (correct_classification_count / float(n)) * 100
+    print "Average accuracy for k-fold cross validation split over n iterations is " + str(percentage) + "%"
 
 
-main(1000, 10)
+def evaluation(X, Y, text):
+    vectorizer = TfidfVectorizer(min_df=5,
+                                 max_df=0.8,
+                                 sublinear_tf=True,
+                                 use_idf=True)
+    train_vectors = vectorizer.fit_transform(X)
+    test_vectors = vectorizer.transform([text])
+    classifier_rbf = svm.SVC()
+    classifier_rbf.fit(train_vectors, Y)
+    return classifier_rbf.predict(test_vectors)
+
+main(100, 10)
