@@ -1,0 +1,1 @@
+comic item predict atleast 15 prior actual

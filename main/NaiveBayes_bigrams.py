@@ -1,8 +1,8 @@
 import copy
 import random
 import csv
-import nltk
 from collections import Counter
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
 
 # splitting the dataSet into 90:10 ratio for 10-fold cross validation
@@ -26,14 +26,15 @@ def create_classification_classes(pos_data, neg_data):
 
 
 def concatenate_reviews(reviews):
-    return " ".join([r.lower() for r in reviews])
+    try:
+        return " ".join([r.lower() for r in reviews])
+    except:
+        return ""
 
 
 def count_text(text, size):
-    words = list(nltk.bigrams(text.split()))
+    words = text.split()
     word_dict = dict(Counter(words))
-    for key in word_dict.keys():
-        word_dict[key] = word_dict[key] / float(size)
     return word_dict
 
 
@@ -50,16 +51,22 @@ def get_review_list(reviews):
     return review_list
 
 
+def word_probabilities(word_counts, vocab_size):
+    word_probability = dict()
+    size = len(word_counts)
+    for key in word_counts:
+        word_probability[key] = float(word_counts[key] + 1) / (size + vocab_size)
+
+    return word_probability
+
+
 def make_prediction(text, word_freq, class_prob):
     prediction = class_prob
-    # text_counts = text.split()
-    text_counts = list(nltk.bigrams(text.split()))
+    text_counts = text.split()
     for word in text_counts:
         if word in word_freq.keys():
             relative_word_occurrence = word_freq[word]
             prediction *= relative_word_occurrence
-        # else:
-        #     prediction *= 0
     return prediction
 
 
@@ -70,6 +77,7 @@ def split_data_by_classes(reviews):
 
     for i in range(size):
         text = reviews[i][1]
+        text = ''.join([x for x in text if not x.isdigit()])
         if reviews[i][2] == '0':
             neg_data.append(text)
         else:
@@ -79,16 +87,19 @@ def split_data_by_classes(reviews):
 
 
 def main(n, k):
-    pos_data = list(csv.reader(open('training/pos/corpus_pos.csv', "r")))
-    neg_data = list(csv.reader(open('training/neg/corpus_neg.csv', "r")))
+    pos_data = list(csv.reader(open('training/pos/corpus_bigram_pos.csv', "r")))
+    neg_data = list(csv.reader(open('training/neg/corpus_bigram_neg.csv', "r")))
 
     all_data = pos_data + neg_data
+    actual_labels = list()
+    predicted_labels = list()
 
-    acc = 0
+    correct_classification_count = 0
+    incorrect_classification_count = 0
     for i in range(n):
-        all_data = k_fold_data(all_data, k)
+        data = k_fold_data(all_data, k)
 
-        pos_data, neg_data = split_data_by_classes(all_data[0])
+        pos_data, neg_data = split_data_by_classes(data[0])
 
         pos_total = len(pos_data)
         neg_total = len(neg_data)
@@ -101,17 +112,60 @@ def main(n, k):
         neg_counts = word_count(neg_data)
         pos_counts = word_count(pos_data)
 
-        test_data = all_data[1]
+        vocab_counts = dict(Counter(neg_counts) + Counter(pos_counts))
 
-        neg = make_prediction(test_data[0][1], neg_counts, neg_prob)
-        pos = make_prediction(test_data[0][1], pos_counts, pos_prob)
+        vocab_size = len(vocab_counts)
 
-        acc = max(neg, pos)
+        neg_probabilities = word_probabilities(neg_counts, vocab_size)
+        pos_probabilities = word_probabilities(pos_counts, vocab_size)
 
-    print "Average accuracy for k-fold cross validation split over n iterations is " + str(float(acc) / n) + "%"
+        test_data = data[1]
 
-    # accuracy = looc(all_data)
-    # print "accuracy for multiclass classification with LOOCV is " + str(accuracy * 100) + "%"
+        j = random.randrange(len(test_data))
+
+        test_total = len(test_data)
+
+        # for j in range(test_total):
+
+        test_review = test_data[j][1]
+        test_class = test_data[j][2]
+
+        actual_labels.append(test_class)
+
+        neg = make_prediction(test_review, neg_probabilities, neg_prob)
+        pos = make_prediction(test_review, pos_probabilities, pos_prob)
+
+        if pos > neg:
+            output_class = '1'
+            predicted_labels.append('1')
+        else:
+            output_class = '0'
+            predicted_labels.append('0')
+
+        if output_class == test_class:
+            correct_classification_count += 1
+        else:
+            incorrect_classification_count += 1
+
+    evaluation(actual_labels, predicted_labels)
+
+    percentage = (correct_classification_count / float(correct_classification_count + incorrect_classification_count)) * 100
+    print "Average accuracy for k-fold cross validation split over n iterations is " + str(percentage) + "%"
 
 
-main(1000, 10)
+def evaluation(actual_labels, predicted_labels):
+    accuracy = accuracy_score(actual_labels, predicted_labels)
+    precision = precision_score(actual_labels, predicted_labels, [0, 1], '1', 'binary')
+    recall = recall_score(actual_labels, predicted_labels, [0, 1], '1')
+    f1 = f1_score(actual_labels, predicted_labels, [0, 1], '1')
+    str_accuracy = "%.9f" % accuracy
+    str_precision = "%.9f" % precision
+    str_recall = "%.9f" % recall
+    str_f1 = "%.9f" % f1
+    print "Accuracy: " + str_accuracy
+    print "Precision: " + str_precision
+    print "Recall: " + str_recall
+    print "F1: " + str_f1
+
+
+main(100, 10)

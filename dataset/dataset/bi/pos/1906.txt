@@ -1,0 +1,1 @@
+my_rat rating_8 8_out
