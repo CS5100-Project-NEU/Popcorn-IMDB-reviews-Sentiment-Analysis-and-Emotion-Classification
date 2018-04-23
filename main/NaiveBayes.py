@@ -164,7 +164,7 @@ def naive_bayes(n, k, pos_file_path, neg_file_path, is_tfidf):
 
         # test_total = len(test_data)
 
-        for x in range(1):
+        for x in range(10):
 
             j = random.randrange(len(test_data))
 
@@ -208,16 +208,16 @@ def evaluation(actual_labels, predicted_labels):
 
 def main():
     print "Naive Bayes for Unigrams"
-    naive_bayes(10, 10, 'training/pos/corpus_pos.csv', 'training/neg/corpus_neg.csv', False)
+    naive_bayes(100, 10, 'training/pos/corpus_pos.csv', 'training/neg/corpus_neg.csv', False)
 
     print "Naive Bayes for Bigrams"
-    naive_bayes(10, 10, 'training/pos/corpus_bigram_pos.csv', 'training/neg/corpus_bigram_neg.csv', False)
+    naive_bayes(100, 10, 'training/pos/corpus_bigram_pos.csv', 'training/neg/corpus_bigram_neg.csv', False)
 
     print "Naive Bayes for Unigrams with TF-IDF"
-    naive_bayes(10, 10, 'training/pos/corpus_pos.csv', 'training/neg/corpus_neg.csv', True)
+    naive_bayes(100, 10, 'training/pos/corpus_pos.csv', 'training/neg/corpus_neg.csv', True)
 
     print "Naive Bayes for Bigrams with TF-IDF"
-    naive_bayes(10, 10, 'training/pos/corpus_bigram_pos.csv', 'training/neg/corpus_bigram_neg.csv', True)
+    naive_bayes(100, 10, 'training/pos/corpus_bigram_pos.csv', 'training/neg/corpus_bigram_neg.csv', True)
 
 
 main()
