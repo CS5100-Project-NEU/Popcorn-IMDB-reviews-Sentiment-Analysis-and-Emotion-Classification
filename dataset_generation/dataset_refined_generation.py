@@ -45,8 +45,8 @@ def extract_review_content(imdb_id):
 def create_review_files(movie_count):
 
     review_count_per_movie = 20
-    pos_path = 'C:/Users/Srivardhan/Desktop/NeU/FAI/project/code/res/pos/'
-    neg_path = 'C:/Users/Srivardhan/Desktop/NeU/FAI/project/code/res/neg/'
+    pos_path = 'C:/***/pos/'
+    neg_path = 'C:/***/neg/'
 
     pos_counter = 0
     neg_counter = 0
