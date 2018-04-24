@@ -8,7 +8,7 @@ Extract `aclImdb_v1.tar.gz` in the **main** folder
 Paths: `main\test` and `main\train`
 
 To execute:
-	`python NBtrain.py '../main/train'`
-	`python NBtest.py '../main/test'`
+	* `python NBtrain.py '../main/train'`
+	* `python NBtest.py '../main/test'`
 
 Dataset Reffered: [Large Movie Review Dataset](http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz)
