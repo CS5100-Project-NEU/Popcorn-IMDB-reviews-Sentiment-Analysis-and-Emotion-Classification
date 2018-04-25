@@ -6,7 +6,7 @@ from sklearn.svm import LinearSVC
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import StratifiedKFold
 
-def make_Corpus(root_dir):
+def create_Corpus(root_dir):
     polarity_dirs = [os.path.join(root_dir,f) for f in os.listdir(root_dir)]
     corpus = []
 
@@ -26,7 +26,7 @@ def make_Corpus(root_dir):
 #Create a dictionary of words with its frequency
 
 root_dir = 'txt_sentoken'
-corpus = make_Corpus(root_dir)
+corpus = create_Corpus(root_dir)
 
 
 #Prepare feature vectors per training mail and its labels

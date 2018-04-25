@@ -1,1 +1,0 @@
-has_good good_actor actors_a good_budget budget_and funny_throughout

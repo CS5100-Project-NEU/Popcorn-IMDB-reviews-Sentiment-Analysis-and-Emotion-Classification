@@ -1,1 +1,0 @@
-put low rate rate 6700 shadow minor rate
