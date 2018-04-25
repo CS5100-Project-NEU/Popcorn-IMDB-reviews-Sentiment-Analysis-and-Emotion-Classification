@@ -16,7 +16,7 @@ ___
   * Execute `python review_polarity.py` and `python review_polarity.py`
 
 
-### Dataset
+### [Dataset](https://github.com/CS5100-Project-NEU/Popcorn-IMDB-reviews-Sentiment-Analysis-and-Emotion-Classification/tree/master/dataset)
   We have extracted our custom datasets by implementing the DFS crawler. Refer `dataset_generation/` for the code and `dataset/` for the extracted dataset.
 
 ### Results
